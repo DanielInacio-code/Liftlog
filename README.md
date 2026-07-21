@@ -4,6 +4,20 @@ LiftLog is an offline-first Android workout tracker built with C#, .NET MAUI,
 and SQLite. It keeps workout data on the device and is designed to remain
 useful without an account, backend, or internet connection.
 
+## App Preview
+
+<p align="center">
+  <img src="docs/screenshots/home.png" width="30%" alt="LiftLog home dashboard">
+  <img src="docs/screenshots/routines.png" width="30%" alt="LiftLog workout routines">
+  <img src="docs/screenshots/exercises.png" width="30%" alt="LiftLog exercise catalogue">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/history.png" width="30%" alt="LiftLog workout history">
+  <img src="docs/screenshots/profile.png" width="30%" alt="LiftLog training profile and statistics">
+  <img src="docs/screenshots/calendar.png" width="30%" alt="LiftLog workout calendar">
+</p>
+
 ## Features
 
 - Create custom exercises and reusable workout routines.
