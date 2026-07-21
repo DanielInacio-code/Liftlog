@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.ExerciseDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:ExerciseDetailsViewModel"
+    ControlTemplate="{StaticResource PageWithWorkoutBarTemplate}"
+    Title="{x:Static strings:AppText.ExercisesTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,36" Spacing="20">
+            <Border Style="{StaticResource ExerciseImageFrameStyle}" HeightRequest="220">
+                <Image
+                    Source="{Binding ImageSource}"
+                    Aspect="AspectFit"
+                    SemanticProperties.Description="{x:Static strings:AppText.ExercisePhotoLabel}" />
+            </Border>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{Binding Name}" Style="{StaticResource PageTitleStyle}" />
+                <Label Text="{Binding TypeLabel}" Style="{StaticResource AccentCaptionStyle}" />
+            </VerticalStackLayout>
+
+            <Border Style="{StaticResource CardStyle}">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="8">
+                    <Label Text="{x:Static strings:AppText.MuscleGroupLabel}" Style="{StaticResource FormLabelStyle}" />
+                    <Label Grid.Column="1" Text="{Binding MuscleGroup}" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="1" Text="{x:Static strings:AppText.EquipmentLabel}" Style="{StaticResource FormLabelStyle}" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Equipment}" HorizontalTextAlignment="End" />
+                </Grid>
+            </Border>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{x:Static strings:AppText.InstructionsLabel}" Style="{StaticResource SectionTitleStyle}" />
+                <Label Text="{Binding Instructions}" Style="{StaticResource BodyMutedStyle}" />
+            </VerticalStackLayout>
+
+            <Grid IsVisible="{Binding HasError}" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+            </Grid>
+
+            <VerticalStackLayout IsVisible="{Binding IsCustom}" Spacing="10">
+                <Button
+                    Text="{x:Static strings:AppText.EditExercise}"
+                    Command="{Binding EditCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}" />
+                <Button
+                    Text="{x:Static strings:AppText.DeleteExercise}"
+                    Clicked="OnDeleteClicked"
+                    Style="{StaticResource DangerButtonStyle}" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                Color="{StaticResource Accent}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

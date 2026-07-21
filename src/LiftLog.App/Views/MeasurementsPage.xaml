@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.MeasurementsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:LiftLog.App.Controls"
+    xmlns:components="clr-namespace:LiftLog.App.Views.Components"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:Name="MeasurementsPageRoot"
+    x:DataType="viewModels:MeasurementsViewModel"
+    Title="{x:Static strings:AppText.MeasurementsTitle}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,16,20,36" Spacing="20">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Label Text="{x:Static strings:AppText.BodyMeasurementsTitle}" Style="{StaticResource PageTitleStyle}" VerticalTextAlignment="Center" />
+                    <Button Grid.Column="1" Text="{x:Static strings:AppText.AddMeasurement}" Command="{Binding ShowEditorCommand}" Style="{StaticResource CompactPrimaryButtonStyle}" />
+                </Grid>
+
+                <Border Style="{StaticResource CardStyle}" IsVisible="{Binding IsEditorVisible}">
+                    <VerticalStackLayout Spacing="12">
+                        <DatePicker Date="{Binding SelectedDate}" MaximumDate="{x:Static sys:DateTime.Today}" />
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{x:Static strings:AppText.BodyWeightLabel}" Style="{StaticResource FormLabelStyle}" />
+                                <controls:DecimalEntry Text="{Binding WeightText}" Placeholder="kg" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="{x:Static strings:AppText.BodyFatLabel}" Style="{StaticResource FormLabelStyle}" />
+                                <controls:DecimalEntry Text="{Binding BodyFatText}" Placeholder="%" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                <Label Text="{x:Static strings:AppText.WaistLabel}" Style="{StaticResource FormLabelStyle}" />
+                                <controls:DecimalEntry Text="{Binding WaistText}" Placeholder="cm" />
+                            </VerticalStackLayout>
+                        </Grid>
+                        <Entry Text="{Binding Notes}" Placeholder="{x:Static strings:AppText.MeasurementNotesPlaceholder}" MaxLength="500" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Text="{x:Static strings:AppText.Cancel}" Command="{Binding CancelEditorCommand}" Style="{StaticResource SecondaryButtonStyle}" />
+                            <Button Grid.Column="1" Text="{x:Static strings:AppText.Save}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButtonStyle}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout IsVisible="{Binding HasWeightTrend}" Spacing="10">
+                    <Label Text="{x:Static strings:AppText.BodyWeightTrendTitle}" Style="{StaticResource SectionTitleStyle}" />
+                    <controls:TrainingChartView Points="{Binding WeightChartPoints}" Kind="Line" SemanticProperties.Description="Body weight trend chart" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding HasNoMeasurements}" Spacing="6" HorizontalOptions="Center">
+                    <Label Text="{x:Static strings:AppText.NoMeasurementsTitle}" Style="{StaticResource CardTitleStyle}" HorizontalTextAlignment="Center" />
+                    <Label Text="{x:Static strings:AppText.NoMeasurementsDescription}" Style="{StaticResource BodyMutedStyle}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Measurements}" IsVisible="{Binding HasMeasurements}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:BodyMeasurementListItem">
+                            <Border Style="{StaticResource CardStyle}">
+                                <Grid ColumnDefinitions="*,48" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                                    <Label Text="{Binding Date}" Style="{StaticResource CardTitleStyle}" />
+                                    <Button Grid.Column="1" Grid.RowSpan="3" Text="&#x00D7;" Command="{Binding Source={x:Reference MeasurementsPageRoot}, Path=BindingContext.DeleteCommand}" CommandParameter="{Binding .}" Style="{StaticResource CompactDangerButtonStyle}" SemanticProperties.Description="Delete measurement" />
+                                    <Label Grid.Row="1" Text="{Binding Details}" Style="{StaticResource AccentCaptionStyle}" />
+                                    <Label Grid.Row="2" Text="{Binding Notes}" IsVisible="{Binding HasNotes}" Style="{StaticResource BodyMutedStyle}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabelStyle}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource Accent}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <components:ActiveWorkoutBannerView x:Name="ActiveWorkoutBanner" Grid.Row="1" />
+    </Grid>
+</ContentPage>

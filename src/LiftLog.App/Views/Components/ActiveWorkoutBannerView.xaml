@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LiftLog.App.Views.Components.ActiveWorkoutBannerView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:ActiveWorkoutBannerViewModel"
+    IsVisible="{Binding IsActive}">
+
+    <Border
+        Margin="14,0,14,8"
+        Padding="14,10"
+        BackgroundColor="{StaticResource SurfaceRaisedDark}"
+        Stroke="{StaticResource OutlineDark}"
+        StrokeThickness="1"
+        SemanticProperties.Description="{Binding RoutineName}"
+        SemanticProperties.Hint="{x:Static strings:AppText.ContinueWorkoutHint}">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding ContinueWorkoutCommand}" />
+        </Border.GestureRecognizers>
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="18" />
+        </Border.StrokeShape>
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11" MinimumHeightRequest="58">
+            <Ellipse
+                HeightRequest="10"
+                WidthRequest="10"
+                Fill="{StaticResource Success}"
+                VerticalOptions="Center" />
+            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                <Label
+                    Text="{Binding RoutineName}"
+                    Style="{StaticResource CardTitleStyle}"
+                    LineBreakMode="TailTruncation"
+                    MaxLines="1" />
+                <Label
+                    Text="{Binding StatusText}"
+                    Style="{StaticResource CaptionStyle}"
+                    LineBreakMode="TailTruncation"
+                    MaxLines="1" />
+            </VerticalStackLayout>
+            <Button
+                Grid.Column="2"
+                HeightRequest="44"
+                WidthRequest="44"
+                Padding="0"
+                Text="⌃"
+                Command="{Binding ContinueWorkoutCommand}"
+                Style="{StaticResource CompactPrimaryButtonStyle}"
+                SemanticProperties.Hint="{x:Static strings:AppText.ContinueWorkoutHint}" />
+        </Grid>
+    </Border>
+</ContentView>

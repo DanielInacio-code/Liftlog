@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:LiftLog.App.Views.Components"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:Name="Page"
+    x:DataType="viewModels:HomeViewModel"
+    Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <Style x:Key="HomeEyebrowStyle" TargetType="Label" BasedOn="{StaticResource CaptionStyle}">
+            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="CharacterSpacing" Value="2.4" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="22,26,22,34" Spacing="30">
+                <VerticalStackLayout Spacing="2">
+                    <Label
+                        Text="{x:Static strings:AppText.AppName}"
+                        Style="{StaticResource AppNameStyle}"
+                        SemanticProperties.HeadingLevel="Level1" />
+                    <Label
+                        Text="{x:Static strings:AppText.HomeTagline}"
+                        Style="{StaticResource CaptionStyle}" />
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource StatusCardStyle}" IsVisible="{Binding HasError}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" />
+                        <Button
+                            Text="{x:Static strings:AppText.Retry}"
+                            Command="{Binding RetryCommand}"
+                            Style="{StaticResource CompactButtonStyle}"
+                            HorizontalOptions="Start" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout Spacing="14">
+                    <Label
+                        Text="{x:Static strings:AppText.ThisWeekTitle}"
+                        Style="{StaticResource HomeEyebrowStyle}"
+                        SemanticProperties.HeadingLevel="Level2" />
+
+                    <FlexLayout
+                        Direction="Row"
+                        JustifyContent="SpaceBetween"
+                        AlignItems="Center"
+                        BindableLayout.ItemsSource="{Binding WeekDays}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:HomeWeekDayItem">
+                                <VerticalStackLayout WidthRequest="34" Spacing="8">
+                                    <Label
+                                        Text="{Binding Label}"
+                                        Style="{StaticResource CaptionStyle}"
+                                        FontSize="10"
+                                        HorizontalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsToday}" Value="True">
+                                                <Setter Property="TextColor" Value="{StaticResource Accent}" />
+                                                <Setter Property="FontFamily" Value="OpenSansSemibold" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Border
+                                        HeightRequest="10"
+                                        WidthRequest="10"
+                                        Padding="0"
+                                        HorizontalOptions="Center"
+                                        BackgroundColor="Transparent"
+                                        Stroke="{StaticResource TextSecondaryDark}"
+                                        StrokeThickness="1">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5" />
+                                        </Border.StrokeShape>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsWorkoutDay}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                                                <Setter Property="Stroke" Value="{StaticResource Accent}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource Accent}" />
+                                                <Setter Property="StrokeThickness" Value="2" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                    </Border>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+
+                    <Border Style="{StaticResource CardStyle}" Padding="0,16">
+                        <Grid ColumnDefinitions="*,1,*,1,*">
+                            <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                                <Label Text="{Binding WeeklyWorkoutCount}" Style="{StaticResource MetricValueStyle}" />
+                                <Label Text="{x:Static strings:AppText.WeeklyWorkoutsLabel}" Style="{StaticResource MetricLabelStyle}" />
+                            </VerticalStackLayout>
+                            <BoxView Grid.Column="1" Color="{StaticResource OutlineDark}" WidthRequest="1" VerticalOptions="Fill" />
+                            <VerticalStackLayout Grid.Column="2" Spacing="3" VerticalOptions="Center">
+                                <Label Text="{Binding WeeklyVolume}" Style="{StaticResource MetricValueStyle}" />
+                                <Label Text="{x:Static strings:AppText.WeeklyVolumeLabel}" Style="{StaticResource MetricLabelStyle}" />
+                            </VerticalStackLayout>
+                            <BoxView Grid.Column="3" Color="{StaticResource OutlineDark}" WidthRequest="1" VerticalOptions="Fill" />
+                            <VerticalStackLayout Grid.Column="4" Spacing="3" VerticalOptions="Center">
+                                <Label Text="{Binding WeeklyDuration}" Style="{StaticResource MetricValueStyle}" />
+                                <Label Text="{x:Static strings:AppText.WeeklyTimeLabel}" Style="{StaticResource MetricLabelStyle}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="13">
+                    <Label
+                        Text="{x:Static strings:AppText.HomeRoutinesTitle}"
+                        Style="{StaticResource HomeEyebrowStyle}"
+                        SemanticProperties.HeadingLevel="Level2" />
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding FeaturedRoutines}"
+                        IsVisible="{Binding HasFeaturedRoutines}"
+                        Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:RoutineListItem">
+                                <Grid RowDefinitions="Auto,1" Padding="0,10,0,0">
+                                    <Grid ColumnDefinitions="42,*,Auto" ColumnSpacing="12" Padding="0,0,0,10">
+                                        <Border
+                                            WidthRequest="38"
+                                            HeightRequest="38"
+                                            Padding="0"
+                                            BackgroundColor="Transparent"
+                                            Stroke="{StaticResource Accent}"
+                                            StrokeThickness="1.5"
+                                            VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="19" />
+                                            </Border.StrokeShape>
+                                            <Label
+                                                Text="{Binding Initial}"
+                                                TextColor="{StaticResource Accent}"
+                                                FontFamily="OpenSansSemibold"
+                                                FontSize="15"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalTextAlignment="Center" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" Style="{StaticResource CardTitleStyle}" />
+                                            <Label Text="{Binding ExerciseCount}" Style="{StaticResource CaptionStyle}" />
+                                        </VerticalStackLayout>
+                                        <Label
+                                            Grid.Column="2"
+                                            Text="›"
+                                            FontSize="28"
+                                            TextColor="{StaticResource TextSecondaryDark}"
+                                            VerticalTextAlignment="Center" />
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={x:Reference Page}, Path=BindingContext.StartRoutineCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Grid.GestureRecognizers>
+                                    </Grid>
+                                    <BoxView Grid.Row="1" Style="{StaticResource RuleStyle}" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Border Style="{StaticResource CardStyle}" IsVisible="{Binding HasNoFeaturedRoutines}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenRoutinesCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{x:Static strings:AppText.NoRoutinesTitle}" Style="{StaticResource CardTitleStyle}" />
+                            <Label Text="{x:Static strings:AppText.NoRoutinesDescription}" Style="{StaticResource CaptionStyle}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="13" IsVisible="{Binding HasRecentWorkout}">
+                    <Label
+                        Text="{x:Static strings:AppText.RecentTitle}"
+                        Style="{StaticResource HomeEyebrowStyle}"
+                        SemanticProperties.HeadingLevel="Level2" />
+                    <Border Style="{StaticResource CardStyle}" Padding="16,14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenRecentWorkoutCommand}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="42,*,Auto" ColumnSpacing="12">
+                            <Border
+                                HeightRequest="36"
+                                WidthRequest="36"
+                                Padding="0"
+                                VerticalOptions="Center"
+                                BackgroundColor="Transparent"
+                                Stroke="{StaticResource Accent}"
+                                StrokeThickness="1">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18" />
+                                </Border.StrokeShape>
+                                <Label
+                                    Text="✓"
+                                    FontFamily="OpenSansSemibold"
+                                    FontSize="16"
+                                    TextColor="{StaticResource Accent}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding RecentWorkoutName}" Style="{StaticResource CardTitleStyle}" />
+                                <Label Text="{Binding RecentWorkoutDetails}" Style="{StaticResource CaptionStyle}" />
+                            </VerticalStackLayout>
+                            <Label
+                                Grid.Column="2"
+                                Text="&#x203A;"
+                                FontSize="28"
+                                TextColor="{StaticResource TextSecondaryDark}"
+                                VerticalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ActivityIndicator
+            Grid.Row="0"
+            IsRunning="{Binding IsInitialLoading}"
+            IsVisible="{Binding IsInitialLoading}"
+            Color="{StaticResource Accent}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
+
+        <components:ActiveWorkoutBannerView x:Name="ActiveWorkoutBanner" Grid.Row="1" />
+    </Grid>
+</ContentPage>

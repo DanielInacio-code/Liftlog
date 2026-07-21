@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="LiftLog.App.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    Title="{x:Static strings:AppText.AppName}"
+    FlyoutBehavior="Disabled">
+
+    <TabBar>
+        <ShellContent
+            x:Name="HomeShellContent"
+            Title="{x:Static strings:AppText.HomeTab}"
+            Icon="nav_home.svg"
+            Route="home" />
+        <ShellContent
+            x:Name="RoutinesShellContent"
+            Title="{x:Static strings:AppText.WorkoutTab}"
+            Icon="nav_workout.svg"
+            Route="routines" />
+        <ShellContent
+            x:Name="ProfileShellContent"
+            Title="{x:Static strings:AppText.ProfileTab}"
+            Icon="nav_profile.svg"
+            Route="profile" />
+    </TabBar>
+</Shell>

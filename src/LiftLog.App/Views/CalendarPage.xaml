@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.CalendarPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:LiftLog.App.Views.Components"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:Name="CalendarPageRoot"
+    x:DataType="viewModels:CalendarViewModel"
+    Title="{x:Static strings:AppText.CalendarTitle}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,16,20,36" Spacing="20">
+                <Grid ColumnDefinitions="48,*,48" ColumnSpacing="10">
+                    <Button
+                        Text="&#x2039;"
+                        Command="{Binding PreviousMonthCommand}"
+                        Style="{StaticResource CompactButtonStyle}"
+                        SemanticProperties.Description="Previous month" />
+                    <Label
+                        Grid.Column="1"
+                        Text="{Binding MonthTitle}"
+                        Style="{StaticResource SectionTitleStyle}"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center" />
+                    <Button
+                        Grid.Column="2"
+                        Text="&#x203A;"
+                        Command="{Binding NextMonthCommand}"
+                        Style="{StaticResource CompactButtonStyle}"
+                        SemanticProperties.Description="Next month" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+                    <Label Text="M" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                    <Label Grid.Column="1" Text="T" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                    <Label Grid.Column="2" Text="W" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                    <Label Grid.Column="3" Text="T" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                    <Label Grid.Column="4" Text="F" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                    <Label Grid.Column="5" Text="S" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                    <Label Grid.Column="6" Text="S" Style="{StaticResource MetricLabelStyle}" HeightRequest="26" VerticalTextAlignment="Center" />
+                </Grid>
+
+                <CollectionView
+                    HeightRequest="288"
+                    ItemsSource="{Binding Days}"
+                    SelectionMode="None"
+                    ItemsUpdatingScrollMode="KeepScrollOffset">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="7" HorizontalItemSpacing="4" VerticalItemSpacing="4" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:CalendarDayItem">
+                            <Button
+                                Text="{Binding DayNumber}"
+                                HeightRequest="44"
+                                MinimumHeightRequest="44"
+                                Padding="0"
+                                FontSize="13"
+                                Command="{Binding Source={x:Reference CalendarPageRoot}, Path=BindingContext.SelectDayCommand}"
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="Transparent"
+                                BorderColor="Transparent">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsCurrentMonth}" Value="False">
+                                        <Setter Property="Opacity" Value="0.28" />
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding HasWorkout}" Value="True">
+                                        <Setter Property="BorderColor" Value="{StaticResource Accent}" />
+                                        <Setter Property="BorderWidth" Value="1" />
+                                        <Setter Property="TextColor" Value="{StaticResource Accent}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                                        <Setter Property="TextColor" Value="{StaticResource Black}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{Binding SelectedDayTitle}" Style="{StaticResource SectionTitleStyle}" />
+
+                    <Label
+                        Text="{x:Static strings:AppText.NoWorkoutsOnSelectedDay}"
+                        IsVisible="{Binding HasNoSelectedWorkouts}"
+                        Style="{StaticResource BodyMutedStyle}" />
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding SelectedWorkouts}"
+                        IsVisible="{Binding HasSelectedWorkouts}"
+                        Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:HistoryWorkoutListItem">
+                                <Border Style="{StaticResource CardStyle}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={x:Reference CalendarPageRoot}, Path=BindingContext.OpenWorkoutCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                                        <Label Text="{Binding Name}" Style="{StaticResource CardTitleStyle}" />
+                                        <Label Grid.Column="1" Text="{Binding Duration}" Style="{StaticResource AccentCaptionStyle}" />
+                                        <Label Grid.Row="1" Text="{Binding Summary}" Style="{StaticResource CaptionStyle}" />
+                                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Volume}" Style="{StaticResource CaptionStyle}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource StatusCardStyle}" IsVisible="{Binding HasError}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" />
+                        <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+                    </Grid>
+                </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource Accent}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <components:ActiveWorkoutBannerView x:Name="ActiveWorkoutBanner" Grid.Row="1" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.DataBackupPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:DataBackupViewModel"
+    Title="{x:Static strings:AppText.DataBackupTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,18,20,36" Spacing="20">
+            <VerticalStackLayout Spacing="5">
+                <Label Text="{x:Static strings:AppText.DataBackupTitle}" Style="{StaticResource PageTitleStyle}" />
+                <Label Text="{x:Static strings:AppText.StoredOnDevice}" Style="{StaticResource AccentCaptionStyle}" />
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                <Border Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.WorkoutsCountLabel}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding WorkoutCount}" Style="{StaticResource SectionTitleStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.RoutinesTitle}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding RoutineCount}" Style="{StaticResource SectionTitleStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.ExercisesTitle}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding ExerciseCount}" Style="{StaticResource SectionTitleStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.MeasurementsTitle}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding MeasurementCount}" Style="{StaticResource SectionTitleStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorLabelStyle}" />
+            <Button Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" IsVisible="{Binding HasError}" Style="{StaticResource CompactButtonStyle}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{StaticResource Accent}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

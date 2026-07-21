@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.WorkoutSummaryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:WorkoutSummaryViewModel"
+    ControlTemplate="{StaticResource PageWithWorkoutBarTemplate}"
+    Title="{x:Static strings:AppText.WorkoutSummaryTitle}">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding FinishCommand}" />
+    </Shell.BackButtonBehavior>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,36" Spacing="20">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{x:Static strings:AppText.WorkoutCompletedTitle}" Style="{StaticResource AccentCaptionStyle}" />
+                <Label Text="{Binding WorkoutName}" Style="{StaticResource PageTitleStyle}" />
+                <Label Text="{Binding Date}" Style="{StaticResource BodyMutedStyle}" />
+                <Label Text="{Binding ComparisonContext}" Style="{StaticResource AccentCaptionStyle}" />
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                <Border Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.DurationLabel}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding Duration}" Style="{StaticResource SectionTitleStyle}" />
+                        <Label
+                            Text="{Binding DurationComparison}"
+                            IsVisible="{Binding HasPreviousWorkout}"
+                            Style="{StaticResource CaptionStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.VolumeLabel}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding Volume}" Style="{StaticResource SectionTitleStyle}" />
+                        <Label
+                            Text="{Binding VolumeComparison}"
+                            IsVisible="{Binding HasPreviousWorkout}"
+                            Style="{StaticResource CaptionStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.CompletedSetsLabel}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding CompletedSetCount}" Style="{StaticResource SectionTitleStyle}" />
+                        <Label
+                            Text="{Binding CompletedSetComparison}"
+                            IsVisible="{Binding HasPreviousWorkout}"
+                            Style="{StaticResource CaptionStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatusCardStyle}">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static strings:AppText.RecordsLabel}" Style="{StaticResource CaptionStyle}" />
+                        <Label Text="{Binding PersonalRecordCount}" Style="{StaticResource SectionTitleStyle}" />
+                        <Label Text="{x:Static strings:AppText.NewRoutineRecords}" Style="{StaticResource CaptionStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Grid IsVisible="{Binding HasError}" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+            </Grid>
+
+            <Button
+                Text="{x:Static strings:AppText.ViewWorkoutDetails}"
+                Command="{Binding OpenDetailsCommand}"
+                Style="{StaticResource SecondaryButtonStyle}" />
+
+            <Button
+                Text="{x:Static strings:AppText.BackToHome}"
+                Command="{Binding FinishCommand}"
+                Style="{StaticResource PrimaryButtonStyle}" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                Color="{StaticResource Accent}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

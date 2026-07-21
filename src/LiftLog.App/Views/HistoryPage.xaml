@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.HistoryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    xmlns:components="clr-namespace:LiftLog.App.Views.Components"
+    x:DataType="viewModels:HistoryViewModel"
+    Title="{x:Static strings:AppText.HistoryTitle}">
+
+    <Grid RowDefinitions="*,Auto,Auto" Padding="20,12,20,0" RowSpacing="12">
+        <CollectionView
+            x:Name="HistoryCollection"
+            ItemsSource="{Binding Workouts}"
+            RemainingItemsThreshold="5"
+            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+            SelectionMode="Single"
+            SelectionChanged="OnWorkoutSelected">
+            <CollectionView.Footer>
+                <Grid HeightRequest="44" IsVisible="{Binding IsLoadingMore}">
+                    <ActivityIndicator
+                        IsRunning="{Binding IsLoadingMore}"
+                        Color="{StaticResource Accent}"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center" />
+                </Grid>
+            </CollectionView.Footer>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:HistoryWorkoutListItem">
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10">
+                        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="5" ColumnSpacing="12">
+                            <Label Text="{Binding Name}" Style="{StaticResource CardTitleStyle}" />
+                            <Label Grid.Column="1" Text="{Binding Volume}" Style="{StaticResource AccentCaptionStyle}" />
+                            <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Date}" Style="{StaticResource BodyMutedStyle}" />
+                            <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                <Label Text="{Binding Summary}" Style="{StaticResource CaptionStyle}" />
+                                <Label Grid.Column="1" Text="{Binding Duration}" Style="{StaticResource CaptionStyle}" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <VerticalStackLayout
+            IsVisible="{Binding IsEmpty}"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            Spacing="6">
+            <Label
+                Text="{x:Static strings:AppText.NoHistoryTitle}"
+                Style="{StaticResource SectionTitleStyle}"
+                HorizontalTextAlignment="Center" />
+            <Label
+                Text="{x:Static strings:AppText.NoHistoryDescription}"
+                Style="{StaticResource BodyMutedStyle}"
+                HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1" IsVisible="{Binding HasError}" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+        </Grid>
+
+        <ActivityIndicator
+            Grid.RowSpan="3"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="{StaticResource Accent}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
+
+        <components:ActiveWorkoutBannerView x:Name="ActiveWorkoutBanner" Grid.Row="2" Margin="-20,0,-20,0" />
+    </Grid>
+</ContentPage>

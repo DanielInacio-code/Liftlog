@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.RoutinesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    xmlns:components="clr-namespace:LiftLog.App.Views.Components"
+    x:Name="RoutinesPageRoot"
+    x:DataType="viewModels:RoutinesViewModel"
+    Title="{x:Static strings:AppText.WorkoutTab}">
+
+    <ContentPage.Resources>
+        <Style
+            x:Key="WorkoutSectionButtonStyle"
+            TargetType="Button"
+            BasedOn="{StaticResource CompactButtonStyle}">
+            <Setter Property="BorderColor" Value="Transparent" />
+        </Style>
+        <Style
+            x:Key="WorkoutSectionButtonSelectedStyle"
+            TargetType="Button"
+            BasedOn="{StaticResource CompactPrimaryButtonStyle}" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20,12,20,0" RowSpacing="12">
+        <Grid
+            Grid.Row="0"
+            ColumnDefinitions="*,*,*"
+            ColumnSpacing="8">
+            <Button
+                x:Name="RoutinesSectionButton"
+                Text="{x:Static strings:AppText.RoutinesTab}"
+                Clicked="OnRoutinesSectionClicked" />
+            <Button
+                x:Name="ExercisesSectionButton"
+                Grid.Column="1"
+                Text="{x:Static strings:AppText.ExercisesTab}"
+                Clicked="OnExercisesSectionClicked" />
+            <Button
+                x:Name="HistorySectionButton"
+                Grid.Column="2"
+                Text="{x:Static strings:AppText.HistoryTab}"
+                Clicked="OnHistorySectionClicked" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid
+                x:Name="RoutinesSection"
+                RowDefinitions="Auto,*,Auto"
+                RowSpacing="12">
+                <Button
+                    Grid.Row="0"
+                    Text="{x:Static strings:AppText.NewRoutine}"
+                    Command="{Binding CreateRoutineCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}" />
+
+                <CollectionView
+                    Grid.Row="1"
+                    ItemsSource="{Binding Routines}"
+                    SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:RoutineListItem">
+                            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10" Padding="18">
+                                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto" RowSpacing="10" ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={x:Reference RoutinesPageRoot}, Path=BindingContext.EditRoutineCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </VerticalStackLayout.GestureRecognizers>
+                                        <Label Text="{Binding Name}" Style="{StaticResource CardTitleStyle}" />
+                                        <Label Text="{Binding ExerciseCount}" Style="{StaticResource AccentCaptionStyle}" />
+                                    </VerticalStackLayout>
+                                    <Button
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Text="{x:Static strings:AppText.Edit}"
+                                        Command="{Binding Source={x:Reference RoutinesPageRoot}, Path=BindingContext.EditRoutineCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource CompactButtonStyle}" />
+                                    <Button
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Text="&#x00D7;"
+                                        Clicked="OnDeleteClicked"
+                                        Style="{StaticResource CompactDangerButtonStyle}"
+                                        SemanticProperties.Description="{x:Static strings:AppText.DeleteRoutine}" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.ColumnSpan="3"
+                                        Text="{Binding Preview}"
+                                        Style="{StaticResource BodyMutedStyle}" />
+                                    <Button
+                                        Grid.Row="2"
+                                        Grid.ColumnSpan="3"
+                                        Text="{x:Static strings:AppText.StartThisWorkout}"
+                                        Command="{Binding Source={x:Reference RoutinesPageRoot}, Path=BindingContext.StartRoutineCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsEnabled="{Binding CanStart}"
+                                        Style="{StaticResource PrimaryButtonStyle}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <VerticalStackLayout
+                    Grid.Row="1"
+                    IsVisible="{Binding IsEmpty}"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    Spacing="6">
+                    <Label
+                        Text="{x:Static strings:AppText.NoRoutinesTitle}"
+                        Style="{StaticResource SectionTitleStyle}"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        Text="{x:Static strings:AppText.NoRoutinesDescription}"
+                        Style="{StaticResource BodyMutedStyle}"
+                        HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <Grid Grid.Row="2" IsVisible="{Binding HasError}" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+                </Grid>
+
+                <ActivityIndicator
+                    Grid.RowSpan="3"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="{StaticResource Accent}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" />
+            </Grid>
+
+            <Grid
+                x:Name="ExercisesSection"
+                x:DataType="viewModels:ExercisesViewModel"
+                RowDefinitions="Auto,Auto,*,Auto"
+                RowSpacing="12"
+                IsVisible="False">
+                <SearchBar
+                    Grid.Row="0"
+                    Placeholder="{x:Static strings:AppText.SearchExercisesPlaceholder}"
+                    SemanticProperties.Description="{x:Static strings:AppText.SearchExercisesPlaceholder}"
+                    Text="{Binding SearchText}"
+                    SearchCommand="{Binding SearchCommand}" />
+
+                <Button
+                    Grid.Row="1"
+                    Text="{x:Static strings:AppText.NewExercise}"
+                    Command="{Binding CreateExerciseCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}" />
+
+                <CollectionView
+                    x:Name="ExercisesCollection"
+                    Grid.Row="2"
+                    ItemsSource="{Binding Exercises}"
+                    ItemSizingStrategy="MeasureFirstItem"
+                    SelectionMode="Single"
+                    SelectionChanged="OnExerciseSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:ExerciseListItem">
+                            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10">
+                                <Grid ColumnDefinitions="76,*" ColumnSpacing="14">
+                                    <Border Style="{StaticResource ExerciseImageFrameStyle}" HeightRequest="76" WidthRequest="76">
+                                        <Image
+                                            Source="{Binding ImageSource}"
+                                            Aspect="AspectFill"
+                                            HeightRequest="76"
+                                            WidthRequest="76"
+                                            SemanticProperties.Description="{Binding Name}" />
+                                    </Border>
+                                    <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" Style="{StaticResource CardTitleStyle}" />
+                                        <Label Grid.Row="1" Text="{Binding Details}" Style="{StaticResource BodyMutedStyle}" />
+                                        <Label Grid.Row="2" Text="{Binding TypeLabel}" Style="{StaticResource CaptionStyle}" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <VerticalStackLayout
+                    Grid.Row="2"
+                    IsVisible="{Binding IsEmpty}"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    Spacing="6">
+                    <Label
+                        Text="{x:Static strings:AppText.NoExercisesTitle}"
+                        Style="{StaticResource SectionTitleStyle}"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        Text="{x:Static strings:AppText.NoExercisesDescription}"
+                        Style="{StaticResource BodyMutedStyle}"
+                        HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <Grid Grid.Row="3" IsVisible="{Binding HasError}" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+                </Grid>
+
+                <ActivityIndicator
+                    Grid.RowSpan="4"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="{StaticResource Accent}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" />
+            </Grid>
+
+            <Grid
+                x:Name="HistorySection"
+                x:DataType="viewModels:HistoryViewModel"
+                RowDefinitions="*,Auto"
+                RowSpacing="12"
+                IsVisible="False">
+                <CollectionView
+                    x:Name="HistoryCollection"
+                    Grid.Row="0"
+                    ItemsSource="{Binding Workouts}"
+                    RemainingItemsThreshold="5"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                    SelectionMode="Single"
+                    SelectionChanged="OnWorkoutSelected">
+                    <CollectionView.Footer>
+                        <Grid HeightRequest="44" IsVisible="{Binding IsLoadingMore}">
+                            <ActivityIndicator
+                                IsRunning="{Binding IsLoadingMore}"
+                                Color="{StaticResource Accent}"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </CollectionView.Footer>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:HistoryWorkoutListItem">
+                            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10">
+                                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="5" ColumnSpacing="12">
+                                    <Label Text="{Binding Name}" Style="{StaticResource CardTitleStyle}" />
+                                    <Label Grid.Column="1" Text="{Binding Volume}" Style="{StaticResource AccentCaptionStyle}" />
+                                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Date}" Style="{StaticResource BodyMutedStyle}" />
+                                    <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <Label Text="{Binding Summary}" Style="{StaticResource CaptionStyle}" />
+                                        <Label Grid.Column="1" Text="{Binding Duration}" Style="{StaticResource CaptionStyle}" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <VerticalStackLayout
+                    Grid.Row="0"
+                    IsVisible="{Binding IsEmpty}"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    Spacing="6">
+                    <Label
+                        Text="{x:Static strings:AppText.NoHistoryTitle}"
+                        Style="{StaticResource SectionTitleStyle}"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        Text="{x:Static strings:AppText.NoHistoryDescription}"
+                        Style="{StaticResource BodyMutedStyle}"
+                        HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <Grid Grid.Row="1" IsVisible="{Binding HasError}" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+                </Grid>
+
+                <ActivityIndicator
+                    Grid.RowSpan="2"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="{StaticResource Accent}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" />
+            </Grid>
+        </Grid>
+
+        <components:ActiveWorkoutBannerView
+            x:Name="ActiveWorkoutBanner"
+            Grid.Row="2"
+            Margin="-20,0,-20,0" />
+
+        <Grid
+            x:Name="DeleteRoutineOverlay"
+            Grid.RowSpan="3"
+            Margin="-20,-12,-20,0"
+            ZIndex="200"
+            IsVisible="False"
+            BackgroundColor="#B3000000">
+            <BoxView BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDeleteRoutineBackdropTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+
+            <Border
+                Margin="24"
+                Padding="24"
+                MaximumWidthRequest="420"
+                HorizontalOptions="Fill"
+                VerticalOptions="Center"
+                BackgroundColor="{StaticResource SurfaceRaisedDark}"
+                Stroke="{StaticResource OutlineDark}"
+                StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="18">
+                    <Border
+                        HeightRequest="56"
+                        WidthRequest="56"
+                        Padding="0"
+                        HorizontalOptions="Center"
+                        BackgroundColor="#26D65A50"
+                        Stroke="{StaticResource Danger}"
+                        StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="28" />
+                        </Border.StrokeShape>
+                        <Label
+                            Text="×"
+                            FontFamily="OpenSansSemibold"
+                            FontSize="30"
+                            TextColor="{StaticResource Danger}"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center" />
+                    </Border>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            Text="{x:Static strings:AppText.DeleteRoutine}"
+                            Style="{StaticResource SectionTitleStyle}"
+                            HorizontalTextAlignment="Center" />
+                        <Label
+                            x:Name="DeleteRoutineMessageLabel"
+                            Style="{StaticResource BodyMutedStyle}"
+                            HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Button
+                            Text="{x:Static strings:AppText.KeepRoutine}"
+                            Clicked="OnKeepRoutineClicked"
+                            Style="{StaticResource PrimaryButtonStyle}" />
+                        <Button
+                            Text="{x:Static strings:AppText.Delete}"
+                            Clicked="OnConfirmDeleteRoutineClicked"
+                            Style="{StaticResource DangerButtonStyle}" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

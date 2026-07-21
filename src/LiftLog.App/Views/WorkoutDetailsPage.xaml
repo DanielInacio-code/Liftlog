@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.WorkoutDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:WorkoutDetailsViewModel"
+    ControlTemplate="{StaticResource PageWithWorkoutBarTemplate}"
+    Title="{x:Static strings:AppText.WorkoutDetailsTitle}">
+
+    <Grid RowDefinitions="*,Auto">
+        <CollectionView
+            Grid.Row="0"
+            ItemsSource="{Binding Exercises}"
+            IsGrouped="True"
+            SelectionMode="None"
+            ItemSizingStrategy="MeasureAllItems">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.Header>
+                <VerticalStackLayout
+                    x:DataType="viewModels:WorkoutDetailsViewModel"
+                    Padding="20,20,20,14"
+                    Spacing="20">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{Binding WorkoutName}" Style="{StaticResource PageTitleStyle}" />
+                        <Label Text="{Binding Date}" Style="{StaticResource BodyMutedStyle}" />
+                    </VerticalStackLayout>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+                            <Label Text="{x:Static strings:AppText.DurationLabel}" Style="{StaticResource FormLabelStyle}" />
+                            <Label Grid.Column="1" Text="{Binding Duration}" HorizontalTextAlignment="End" />
+                            <Label Grid.Row="1" Text="{x:Static strings:AppText.VolumeLabel}" Style="{StaticResource FormLabelStyle}" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Volume}" HorizontalTextAlignment="End" />
+                            <Label Grid.Row="2" Text="{x:Static strings:AppText.CompletedSetsLabel}" Style="{StaticResource FormLabelStyle}" />
+                            <Label Grid.Row="2" Grid.Column="1" Text="{Binding CompletedSets}" HorizontalTextAlignment="End" />
+                        </Grid>
+                    </Border>
+
+                    <Label Text="{x:Static strings:AppText.ExercisesPerformedTitle}" Style="{StaticResource SectionTitleStyle}" />
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.GroupHeaderTemplate>
+                <DataTemplate x:DataType="viewModels:WorkoutDetailsExerciseItem">
+                    <Border Margin="20,8,20,0" Style="{StaticResource CardStyle}">
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                <Label Text="{Binding Name}" Style="{StaticResource SectionTitleStyle}" />
+                                <Label Grid.Column="1" Text="{Binding Volume}" Style="{StaticResource AccentCaptionStyle}" />
+                            </Grid>
+                            <Label
+                                Text="{Binding Notes}"
+                                IsVisible="{Binding HasNotes}"
+                                Style="{StaticResource BodyMutedStyle}"
+                                LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.GroupHeaderTemplate>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:WorkoutDetailsSetItem">
+                    <Border Margin="20,0" Style="{StaticResource WorkoutSetCardStyle}">
+                        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="4" ColumnSpacing="10">
+                            <Label Text="{Binding SetNumber}" Style="{StaticResource CardTitleStyle}" />
+                            <Label Grid.Column="1" Text="{Binding Performance}" />
+                            <Label Grid.Row="1" Text="{Binding Type}" Style="{StaticResource CaptionStyle}" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Status}" Style="{StaticResource CaptionStyle}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Text="{Binding Achievement}"
+                                IsVisible="{Binding IsPersonalRecord}"
+                                Style="{StaticResource AccentCaptionStyle}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.GroupFooterTemplate>
+                <DataTemplate>
+                    <BoxView HeightRequest="8" Color="Transparent" />
+                </DataTemplate>
+            </CollectionView.GroupFooterTemplate>
+
+            <CollectionView.Footer>
+                <Grid
+                    x:DataType="viewModels:WorkoutDetailsViewModel"
+                    Margin="20,8,20,36"
+                    IsVisible="{Binding HasError}"
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="10">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="{x:Static strings:AppText.Retry}" Command="{Binding RetryCommand}" Style="{StaticResource CompactButtonStyle}" />
+                </Grid>
+            </CollectionView.Footer>
+        </CollectionView>
+
+        <ActivityIndicator
+            Grid.Row="1"
+            Margin="0,8"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="{StaticResource Accent}" />
+    </Grid>
+</ContentPage>

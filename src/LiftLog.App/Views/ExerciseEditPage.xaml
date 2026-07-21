@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.ExerciseEditPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:ExerciseEditViewModel"
+    ControlTemplate="{StaticResource PageWithWorkoutBarTemplate}"
+    Title="{Binding PageTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,36" Spacing="18">
+            <Label Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
+
+            <VerticalStackLayout Spacing="9">
+                <Label Text="{x:Static strings:AppText.ExercisePhotoLabel}" Style="{StaticResource FormLabelStyle}" />
+                <Border Style="{StaticResource ExerciseImageFrameStyle}" HeightRequest="190">
+                    <Image
+                        Source="{Binding ImageSource}"
+                        Aspect="AspectFit"
+                        SemanticProperties.Description="{x:Static strings:AppText.ExercisePhotoLabel}" />
+                </Border>
+                <Label Text="{x:Static strings:AppText.ExercisePhotoHint}" Style="{StaticResource CaptionStyle}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Button
+                        Text="{x:Static strings:AppText.ChooseExercisePhoto}"
+                        Command="{Binding ChooseImageCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}" />
+                    <Button
+                        Grid.Column="1"
+                        Text="{x:Static strings:AppText.RemoveExercisePhoto}"
+                        Command="{Binding RemoveImageCommand}"
+                        IsVisible="{Binding HasCustomImage}"
+                        Style="{StaticResource DangerButtonStyle}" />
+                </Grid>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="7">
+                <Label Text="{x:Static strings:AppText.NameLabel}" Style="{StaticResource FormLabelStyle}" />
+                <Entry
+                    Text="{Binding Name}"
+                    Placeholder="{x:Static strings:AppText.NamePlaceholder}"
+                    SemanticProperties.Description="{x:Static strings:AppText.NameLabel}"
+                    MaxLength="100" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="7">
+                <Label Text="{x:Static strings:AppText.MuscleGroupLabel}" Style="{StaticResource FormLabelStyle}" />
+                <Picker
+                    Title="{x:Static strings:AppText.SelectMuscleGroup}"
+                    SemanticProperties.Description="{x:Static strings:AppText.MuscleGroupLabel}"
+                    ItemsSource="{Binding MuscleGroups}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedMuscleGroup}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="7">
+                <Label Text="{x:Static strings:AppText.EquipmentLabel}" Style="{StaticResource FormLabelStyle}" />
+                <Picker
+                    Title="{x:Static strings:AppText.SelectEquipment}"
+                    SemanticProperties.Description="{x:Static strings:AppText.EquipmentLabel}"
+                    ItemsSource="{Binding EquipmentOptions}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedEquipment}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="7">
+                <Label Text="{x:Static strings:AppText.InstructionsLabel}" Style="{StaticResource FormLabelStyle}" />
+                <Editor
+                    Text="{Binding Instructions}"
+                    Placeholder="{x:Static strings:AppText.InstructionsPlaceholder}"
+                    SemanticProperties.Description="{x:Static strings:AppText.InstructionsLabel}"
+                    MaxLength="2000"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="120" />
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding ErrorMessage}"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                Style="{StaticResource ErrorLabelStyle}" />
+
+            <Button
+                Text="{x:Static strings:AppText.SaveExercise}"
+                Command="{Binding SaveCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource PrimaryButtonStyle}" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                Color="{StaticResource Accent}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

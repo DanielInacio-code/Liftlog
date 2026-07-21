@@ -1,0 +1,46 @@
+# Local tooling and agent configuration
+.agents/
+.codex/
+.dotnet/
+.tmp/
+dotnet-install.ps1
+
+# .NET build output
+bin/
+obj/
+artifacts/
+
+# IDE and user settings
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Android build and signing output
+src/LiftLog.App/Platforms/Android/.cxx/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Local application data
+*.db
+*.db3
+*.sqlite
+*.sqlite3
+
+# Local documents and temporary images
+*.docx
+.tmp-*.png
+~$*.docx
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.*.local.json
+
+# OS files
+.DS_Store
+Thumbs.db

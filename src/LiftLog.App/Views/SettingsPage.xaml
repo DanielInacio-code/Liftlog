@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:strings="clr-namespace:LiftLog.App.Resources.Strings"
+    xmlns:viewModels="clr-namespace:LiftLog.App.ViewModels"
+    x:DataType="viewModels:SettingsViewModel"
+    Title="{x:Static strings:AppText.SettingsTitle}">
+
+    <VerticalStackLayout Padding="20,18,20,36" Spacing="18">
+        <Label Text="{x:Static strings:AppText.SettingsTitle}" Style="{StaticResource PageTitleStyle}" />
+        <Button
+            Text="{x:Static strings:AppText.DataBackupTitle}"
+            Command="{Binding OpenDataBackupCommand}"
+            Style="{StaticResource SecondaryButtonStyle}" />
+    </VerticalStackLayout>
+</ContentPage>
